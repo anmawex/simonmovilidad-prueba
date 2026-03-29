@@ -1,0 +1,36 @@
+# Node / Frontend / Mobile
+node_modules/
+dist/
+build/
+.next/
+out/
+coverage/
+
+# Go / Backend
+backend/server
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+vendor/
+
+# Entorno y Configuración
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.log
+*.db
+tmp/
+
+# IDEs y OS
+.idea/
+.vscode/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
