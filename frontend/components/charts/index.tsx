@@ -4,7 +4,7 @@ import React from "react";
 
 interface ChartProps {
   title: string;
-  data: any[];
+  data: unknown[];
   type: "line" | "bar" | "pie";
 }
 

@@ -22,7 +22,7 @@ export class WebSocketClient {
     this.socket?.close();
   }
 
-  send(data: any) {
+  send(data: unknown) {
     this.socket?.send(JSON.stringify(data));
   }
 }

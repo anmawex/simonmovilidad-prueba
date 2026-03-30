@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import { RefreshCw, Play, Square } from 'lucide-react'
+import { useVehicles } from '@/hooks/useVehicles'
 
 // MapLibre necesita el DOM — se carga solo en el cliente
 const LiveMap = dynamic(() => import('@/components/map/LiveMap'), {
@@ -15,6 +16,9 @@ const LiveMap = dynamic(() => import('@/components/map/LiveMap'), {
 })
 
 export default function MapPage() {
+  const { vehicles } = useVehicles()
+  const [selectedVehicleId, setSelectedVehicleId] = useState('')
+
   const [isSimulating, setIsSimulating] = useState(false)
   const simulationRef = useRef<NodeJS.Timeout | null>(null)
   
@@ -27,6 +31,10 @@ export default function MapPage() {
       console.error('No hay token para simular')
       return
     }
+    if (!selectedVehicleId) {
+      console.error('No se ha seleccionado vehículo')
+      return
+    }
 
     try {
       await fetch('http://localhost:8080/api/sensors/readings', {
@@ -36,7 +44,7 @@ export default function MapPage() {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          vehicle_id: 'V-101',
+          vehicle_id: selectedVehicleId,
           latitude: lat,
           longitude: lon,
           speed: 40 + Math.random() * 40,
@@ -87,6 +95,18 @@ export default function MapPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold text-foreground">Mapa en vivo</h1>
         <div className="flex items-center gap-3">
+          <select
+            value={selectedVehicleId}
+            onChange={e => setSelectedVehicleId(e.target.value)}
+            disabled={isSimulating}
+            className="bg-slate-900 text-slate-100 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
+          >
+            <option value="" className="bg-slate-900 text-slate-100">Escoge un vehículo...</option>
+            {vehicles.map(v => (
+              <option key={v.id} value={v.id} className="bg-slate-900 text-slate-100">{v.name}</option>
+            ))}
+          </select>
+
           <button 
             onClick={resetSimulation}
             className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold bg-secondary border border-border hover:bg-muted text-foreground transition-colors"
@@ -97,7 +117,8 @@ export default function MapPage() {
           
           <button 
             onClick={toggleSimulation}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold shadow-md transition-colors ${
+            disabled={!selectedVehicleId}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
               isSimulating 
               ? 'bg-red-500/20 text-red-500 border border-red-500/50 hover:bg-red-500/30' 
               : 'bg-primary text-primary-foreground hover:bg-primary/90'
@@ -111,7 +132,7 @@ export default function MapPage() {
             ) : (
               <>
                 <Play className="w-4 h-4 fill-current" />
-                Simular Vehículo (V-101)
+                Simular Vehículo
               </>
             )}
           </button>
