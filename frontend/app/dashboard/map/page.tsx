@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import dynamic from 'next/dynamic'
+import { RefreshCw, Play, Square } from 'lucide-react'
 
 // MapLibre necesita el DOM — se carga solo en el cliente
 const LiveMap = dynamic(() => import('@/components/map/LiveMap'), {
@@ -88,20 +89,31 @@ export default function MapPage() {
         <div className="flex items-center gap-3">
           <button 
             onClick={resetSimulation}
-            className="px-4 py-2 rounded-lg text-sm font-bold bg-secondary border border-border hover:bg-muted text-foreground transition-colors"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold bg-secondary border border-border hover:bg-muted text-foreground transition-colors"
           >
-            🔄 Restablecer 100%
+            <RefreshCw className="w-4 h-4" />
+            Restablecer 100%
           </button>
           
           <button 
             onClick={toggleSimulation}
-            className={`px-4 py-2 rounded-lg text-sm font-bold shadow-md transition-colors ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold shadow-md transition-colors ${
               isSimulating 
               ? 'bg-red-500/20 text-red-500 border border-red-500/50 hover:bg-red-500/30' 
               : 'bg-primary text-primary-foreground hover:bg-primary/90'
             }`}
           >
-            {isSimulating ? '🛑 Detener Simulación' : '▶️ Simular Vehículo (V-101)'}
+            {isSimulating ? (
+              <>
+                <Square className="w-4 h-4 fill-current" />
+                Detener Simulación
+              </>
+            ) : (
+              <>
+                <Play className="w-4 h-4 fill-current" />
+                Simular Vehículo (V-101)
+              </>
+            )}
           </button>
         </div>
       </div>
