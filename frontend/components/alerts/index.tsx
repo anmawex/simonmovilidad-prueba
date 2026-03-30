@@ -20,7 +20,7 @@ export const AlertPanel: React.FC<AlertPanelProps> = ({ alerts, onResolve }) => 
           {alerts.map((alert) => (
             <li key={alert.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border)", paddingBottom: "1rem" }}>
               <div>
-                <strong>{alert.vehicleId}:</strong> {alert.message}
+                <strong>{alert.vehicle_id}:</strong> {alert.message}
               </div>
               <button 
                 onClick={() => onResolve(alert.id)}
