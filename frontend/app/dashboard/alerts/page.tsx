@@ -1,65 +1,103 @@
+'use client'
+
+import { useCallback, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/hooks/useAuth'
+import { useAlerts } from '@/hooks/useAlerts'
+import { useWebSocket } from '@/hooks/useWebSocket'
+import AlertsTable from '@/components/alerts/AlertsTable'
+import type { WSMessage } from '@/types'
+
 export default function AlertsPage() {
-  const alerts = [
-    { type: "high", vehicle: "A123-B", message: "Bajo nivel de combustible", time: "hace 5 min", status: "Pendiente" },
-    { type: "medium", vehicle: "C456-D", message: "Exceso de velocidad (95 km/h)", time: "hace 22 min", status: "Revisado" },
-    { type: "low", vehicle: "E789-F", message: "Puerta trasera mal cerrada", time: "hace 1 hora", status: "Pendiente" },
-  ];
+  const { user, loading: loadingAuth } = useAuth()
+  const router = useRouter()
+
+  // redirige si no es admin
+  useEffect(() => {
+    if (!loadingAuth && user?.role !== 'admin') {
+      router.push('/dashboard')
+    }
+  }, [user, loadingAuth])
+
+  const { alerts, loading, error, addAlert, resolveAlert } = useAlerts()
+
+  // recibe alertas nuevas por WebSocket en tiempo real
+  const handleMessage = useCallback((msg: WSMessage) => {
+    addAlert(msg)
+  }, [addAlert])
+
+  useWebSocket(handleMessage)
+
+  // contadores para el resumen
+  const activeCount   = alerts.filter(a => !a.resolved).length
+  const resolvedCount = alerts.filter(a => a.resolved).length
+  const fuelCount     = alerts.filter(a => a.type === 'low_fuel' && !a.resolved).length
+
+  if (loadingAuth || !user) return null
 
   return (
-    <div className="space-y-6 pb-10">
-      <div className="flex items-end justify-between border-b border-border/50 pb-6">
-        <div>
-          <h1 className="text-3xl font-black text-foreground">Panel de Alertas</h1>
-          <p className="text-sm text-muted-foreground mt-1 font-medium tracking-wide">Vista protegida. Solo disponible para administradores.</p>
-        </div>
+    <div className="flex flex-col gap-6">
+
+      {/* encabezado */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-semibold text-gray-800">Panel de alertas</h1>
+        <span className="text-xs text-gray-400">Solo visible para administradores</span>
       </div>
 
-      <div className="glass-card overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-secondary/40 border-b border-border text-xs uppercase tracking-widest font-bold text-muted-foreground">
-                <th className="py-4 px-6 font-semibold">Gravedad</th>
-                <th className="py-4 px-6 font-semibold">Vehículo</th>
-                <th className="py-4 px-6 font-semibold">Mensaje de Evento</th>
-                <th className="py-4 px-6 font-semibold">Tiempo</th>
-                <th className="py-4 px-6 font-semibold">Estado</th>
-                <th className="py-4 px-6 font-semibold text-right">Acciones</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/50">
-              {alerts.map((alert, idx) => (
-                <tr key={idx} className="hover:bg-muted/20 transition-colors">
-                  <td className="py-4 px-6">
-                    <span className={`
-                      inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest
-                      ${alert.type === 'high' ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 
-                        alert.type === 'medium' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 
-                        'bg-blue-500/10 text-blue-400 border border-blue-500/20'}
-                    `}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${alert.type === 'high' ? 'bg-red-500' : alert.type === 'medium' ? 'bg-amber-500' : 'bg-blue-500'}`} />
-                      {alert.type}
-                    </span>
-                  </td>
-                  <td className="py-4 px-6 font-bold text-foreground text-sm">{alert.vehicle}</td>
-                  <td className="py-4 px-6 text-sm text-muted-foreground font-medium">{alert.message}</td>
-                  <td className="py-4 px-6 text-xs text-muted-foreground font-semibold uppercase">{alert.time}</td>
-                  <td className="py-4 px-6">
-                    <span className={`text-xs font-bold uppercase tracking-wider ${alert.status === 'Pendiente' ? 'text-primary' : 'text-muted-foreground'}`}>
-                      {alert.status}
-                    </span>
-                  </td>
-                  <td className="py-4 px-6 text-right">
-                    <button className="text-xs font-bold uppercase tracking-wider text-primary hover:text-primary-foreground hover:bg-primary px-3 py-1.5 rounded-lg transition-colors border border-primary/20">
-                      Resolver
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      {/* tarjetas de resumen */}
+      <div className="grid grid-cols-3 gap-4">
+        <SummaryCard
+          label="Alertas activas"
+          value={activeCount}
+          color={activeCount > 0 ? 'red' : 'green'}
+        />
+        <SummaryCard
+          label="Combustible crítico"
+          value={fuelCount}
+          color={fuelCount > 0 ? 'amber' : 'green'}
+        />
+        <SummaryCard
+          label="Resueltas"
+          value={resolvedCount}
+          color="gray"
+        />
       </div>
+
+      {/* tabla */}
+      <div className="bg-white rounded-xl shadow p-6">
+        {loading && (
+          <p className="text-gray-400 text-sm">Cargando alertas...</p>
+        )}
+        {error && (
+          <p className="text-red-500 text-sm">{error}</p>
+        )}
+        {!loading && !error && (
+          <AlertsTable alerts={alerts} onResolve={resolveAlert} />
+        )}
+      </div>
+
     </div>
-  );
+  )
+}
+
+function SummaryCard({
+  label, value, color
+}: {
+  label: string
+  value: number
+  color: 'red' | 'amber' | 'green' | 'gray'
+}) {
+  const colors = {
+    red:   'bg-red-50   text-red-700',
+    amber: 'bg-amber-50 text-amber-700',
+    green: 'bg-green-50 text-green-700',
+    gray:  'bg-gray-50  text-gray-700',
+  }
+
+  return (
+    <div className={`rounded-xl p-4 ${colors[color]}`}>
+      <p className="text-xs font-medium opacity-70 mb-1">{label}</p>
+      <p className="text-3xl font-semibold">{value}</p>
+    </div>
+  )
 }
