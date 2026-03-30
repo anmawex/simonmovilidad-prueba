@@ -1,37 +1,38 @@
-/**
- * TypeScript definitions and interfaces for the project.
- */
-
 export interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: "admin" | "user";
+  user_id: string
+  email: string
+  role: 'admin' | 'user'
+  exp: number
 }
 
 export interface Vehicle {
-  id: string;
-  name: string;
-  plate: string;
-  latitude: number;
-  longitude: number;
-  speed: number;
-  fuel: number;
-  status: "online" | "offline";
-  lastUpdate: string;
+  id: string
+  device_id: string  // enmascarado para no-admins
+  name: string
 }
 
-export interface TelemetryData {
-  vehicleId: string;
-  timestamp: string;
-  payload: Record<string, any>;
+export interface SensorReading {
+  id: string
+  vehicle_id: string
+  latitude: number
+  longitude: number
+  speed: number
+  fuel_level: number
+  fuel_autonomy: number
+  temperature: number
+  recorded_at: string
 }
 
 export interface Alert {
-  id: string;
-  type: "high" | "medium" | "low";
-  vehicleId: string;
-  message: string;
-  time: string;
-  status: "pending" | "resolved";
+  id: string
+  vehicle_id: string
+  type: string
+  message: string
+  resolved: boolean
+  created_at: string
+}
+
+export interface WSMessage {
+  event: 'sensor_reading' | 'alert'
+  payload: SensorReading | Alert
 }
