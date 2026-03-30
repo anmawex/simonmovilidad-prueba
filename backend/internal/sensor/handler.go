@@ -57,6 +57,16 @@ func (h *Handler) GetHistory(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, readings)
 }
 
+// GET /api/sensors/latest
+func (h *Handler) GetLatest(w http.ResponseWriter, r *http.Request) {
+	readings, err := h.service.GetLatest()
+	if err != nil {
+		respondError(w, http.StatusInternalServerError, "error obteniendo lecturas recientes")
+		return
+	}
+	respondJSON(w, http.StatusOK, readings)
+}
+
 func respondJSON(w http.ResponseWriter, status int, data any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)

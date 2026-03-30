@@ -94,6 +94,7 @@ func main() {
 
 		r.Get("/api/vehicles",                     vehicleHandler.GetAll)
 		r.Post("/api/sensors/readings",             sensorHandler.SaveReading)
+		r.Get("/api/sensors/latest",                sensorHandler.GetLatest)
 		r.Get("/api/sensors/readings/{vehicleID}",  sensorHandler.GetHistory)
 	})
 

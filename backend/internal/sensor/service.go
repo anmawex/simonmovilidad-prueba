@@ -94,6 +94,32 @@ func (s *Service) Save(input ReadingInput) (*Reading, error) {
 	return reading, nil
 }
 
+func (s *Service) GetLatest() ([]Reading, error) {
+	rows, err := s.db.Query(`
+		SELECT id, vehicle_id, latitude, longitude, speed,
+		       fuel_level, fuel_autonomy, temperature, recorded_at
+		FROM sensor_readings
+		GROUP BY vehicle_id
+		HAVING MAX(recorded_at)`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var readings []Reading
+	for rows.Next() {
+		var r Reading
+		if err := rows.Scan(
+			&r.ID, &r.VehicleID, &r.Latitude, &r.Longitude, &r.Speed,
+			&r.FuelLevel, &r.FuelAutonomy, &r.Temperature, &r.RecordedAt,
+		); err != nil {
+			return nil, err
+		}
+		readings = append(readings, r)
+	}
+	return readings, nil
+}
+
 func (s *Service) GetHistory(vehicleID string, limit int) ([]Reading, error) {
 	rows, err := s.db.Query(`
 		SELECT id, vehicle_id, latitude, longitude, speed,
