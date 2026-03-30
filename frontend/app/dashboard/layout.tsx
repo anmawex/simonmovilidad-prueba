@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
+import OfflineBanner from '@/components/ui/OfflineBanner'
 import { 
   LayoutDashboard, 
   Map as MapIcon, 
@@ -141,6 +142,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Main Content Area */}
       <main className="flex-1 overflow-x-hidden overflow-y-auto bg-background md:p-8 p-4 relative">
+          <OfflineBanner />  
         {/* Subtle grid background for the premium dev look */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
         
