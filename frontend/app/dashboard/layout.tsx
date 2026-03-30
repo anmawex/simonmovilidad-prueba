@@ -1,53 +1,54 @@
-import styles from "./dashboard.module.css";
-import Link from "next/link";
+'use client'
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const sidebarLinks = [
-    { href: "/dashboard", label: "General", icon: "📊" },
-    { href: "/dashboard/map", label: "Mapa en Vivo", icon: "🗺️" },
-    { href: "/dashboard/charts", label: "Histórico", icon: "📈" },
-    { href: "/dashboard/alerts", label: "Alertas", icon: "🚨" },
-  ];
+import { useEffect } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
+import Link from 'next/link'
+import { useAuth } from '@/hooks/useAuth'
+
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const { user, loading, logout } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login')
+    }
+  }, [user, loading])
+
+  if (loading || !user) return null
 
   return (
-    <div className={styles.layout}>
-      <aside className={`${styles.sidebar} glass-card`}>
-        <div className={styles.logo}>
-          <span style={{ fontWeight: 800, fontSize: "1.25rem", color: "var(--primary)" }}>Simón</span>
-        </div>
-        <nav className={styles.nav}>
-          {sidebarLinks.map((link) => (
-            <Link key={link.href} href={link.href} className={styles.navItem}>
-              <span>{link.icon}</span>
-              <span>{link.label}</span>
-            </Link>
-          ))}
-        </nav>
-        <div className={styles.sidebarFooter}>
-          <Link href="/login" className={styles.logout}>
-            Cerrar Sesión
+    <div className="min-h-screen flex">
+      {/* sidebar */}
+      <aside className="w-56 bg-gray-900 text-white flex flex-col p-4 gap-2">
+        <p className="text-lg font-semibold mb-4">Simon Movilidad</p>
+
+        <Link href="/dashboard"        className="nav-link">Dashboard</Link>
+        <Link href="/dashboard/map"    className="nav-link">Mapa en vivo</Link>
+        <Link href="/dashboard/charts" className="nav-link">Gráficos</Link>
+
+        {/* Solo visible para admin */}
+        {user.role === 'admin' && (
+          <Link href="/dashboard/alerts" className="nav-link text-yellow-400">
+            Alertas
           </Link>
+        )}
+
+        <div className="mt-auto">
+          <p className="text-xs text-gray-400 mb-2">{user.email}</p>
+          <button
+            onClick={logout}
+            className="text-sm text-red-400 hover:text-red-300"
+          >
+            Cerrar sesión
+          </button>
         </div>
       </aside>
-      
-      <div className={styles.mainContent}>
-        <header className={styles.header}>
-          <div className={styles.headerInner}>
-            <h2 className={styles.headerTitle}>Panel de Control</h2>
-            <div className={styles.userInfo}>
-              <div className={styles.avatar}>A</div>
-              <span>Administrador</span>
-            </div>
-          </div>
-        </header>
-        <main className={styles.children}>
-          {children}
-        </main>
-      </div>
+
+      {/* contenido */}
+      <main className="flex-1 bg-gray-50 p-6">
+        {children}
+      </main>
     </div>
-  );
+  )
 }

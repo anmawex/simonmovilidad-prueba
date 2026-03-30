@@ -15,6 +15,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
 	_ "modernc.org/sqlite"
 )
@@ -57,6 +58,17 @@ func main() {
 
 	// Router
 	r := chi.NewRouter()
+	
+	// configuración de CORS para permitir solicitudes desde el frontend (puerto 3000)
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3000"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300, 
+	}))
+
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
