@@ -4,6 +4,16 @@ import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
+import { 
+  LayoutDashboard, 
+  Map as MapIcon, 
+  BarChart3, 
+  Bell, 
+  LogOut, 
+  Menu, 
+  X,
+  Truck
+} from 'lucide-react'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, logout } = useAuth()
@@ -26,23 +36,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   const navLinks = [
-    { href: '/dashboard', label: 'Dashboard Resumen', icon: '📊' },
-    { href: '/dashboard/map', label: 'Mapa en vivo', icon: '🗺️' },
-    { href: '/dashboard/charts', label: 'Gráficos Históricos', icon: '📈' },
+    { href: '/dashboard', label: 'Dashboard Resumen', icon: LayoutDashboard },
+    { href: '/dashboard/map', label: 'Mapa en vivo', icon: MapIcon },
+    { href: '/dashboard/charts', label: 'Gráficos Históricos', icon: BarChart3 },
   ]
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-background text-foreground overflow-hidden">
       {/* Mobile Header */}
       <div className="md:hidden flex items-center justify-between p-4 bg-secondary border-b border-border z-50">
-        <p className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-emerald-300">
+        <p className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-emerald-300 flex items-center gap-2">
+          <Truck className="w-5 h-5 text-primary" />
           Simón
         </p>
         <button 
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           className="p-2 text-muted-foreground hover:text-foreground"
         >
-          {mobileMenuOpen ? '✖' : '☰'}
+          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
 
@@ -53,9 +64,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         absolute md:relative z-40 h-[calc(100vh-64px)] md:h-screen transition-all shadow-xl
       `}>
         <div className="hidden md:block mb-8 px-2">
-          <p className="text-2xl font-black tracking-tight text-white mb-1">
-            Simón <span className="text-primary">App</span>
-          </p>
+          <div className="flex items-center gap-2 mb-1">
+            <Truck className="w-6 h-6 text-primary" />
+            <p className="text-2xl font-black tracking-tight text-white">
+              Simón <span className="text-primary">App</span>
+            </p>
+          </div>
           <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
             Fleet Management
           </p>
@@ -64,6 +78,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <nav className="flex flex-col gap-2 flex-1 mt-4 md:mt-0">
           {navLinks.map((link) => {
             const isActive = pathname === link.href
+            const Icon = link.icon
             return (
               <Link 
                 key={link.href} 
@@ -76,7 +91,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground'}
                 `}
               >
-                <span className="text-lg">{link.icon}</span>
+                <Icon className={`w-5 h-5 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
                 {link.label}
               </Link>
             )
@@ -96,7 +111,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     : 'text-muted-foreground hover:bg-muted hover:text-amber-400'}
                 `}
               >
-                <span className="text-lg">🚨</span>
+                <Bell className={`w-5 h-5 ${pathname === '/dashboard/alerts' ? 'text-amber-500' : 'text-muted-foreground'}`} />
                 Centro de Alertas
               </Link>
             </>
@@ -106,7 +121,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* User Card inside Sidebar */}
         <div className="mt-auto p-4 bg-muted/50 rounded-xl border border-border flex flex-col gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-emerald-400 flex items-center justify-center text-sm font-bold text-black shadow-inner">
+            <div className="w-10 h-10 shrink-0 rounded-full bg-gradient-to-tr from-primary to-emerald-400 flex items-center justify-center text-sm font-bold text-black shadow-inner">
               {user.email.charAt(0).toUpperCase()}
             </div>
             <div className="overflow-hidden">
@@ -116,8 +131,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
           <button
             onClick={logout}
-            className="w-full text-xs font-semibold uppercase tracking-wider text-red-400 bg-red-400/10 hover:bg-red-400/20 py-2 rounded-lg transition-colors border border-red-400/20"
+            className="w-full flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wider text-red-400 bg-red-400/10 hover:bg-red-400/20 py-2.5 rounded-lg transition-colors border border-red-400/20"
           >
+            <LogOut className="w-4 h-4" />
             Cerrar sesión
           </button>
         </div>
