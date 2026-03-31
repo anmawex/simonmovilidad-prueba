@@ -24,7 +24,7 @@ func NewHub() *Hub {
 	}
 }
 
-// broadcast envía un mensaje a todos los clientes conectados
+// broadcast envía un mensaje a todos los clientes operativos
 func (h *Hub) Broadcast(event string, payload any) {
 	msg, err := json.Marshal(map[string]any{
 		"event":   event,
@@ -34,14 +34,14 @@ func (h *Hub) Broadcast(event string, payload any) {
 		return
 	}
 
-	h.mu.RLock()
-	defer h.mu.RUnlock()
+	h.mu.Lock()
+	defer h.mu.Unlock()
 
 	for client := range h.clients {
 		select {
 		case client.send <- msg:
 		default:
-			// cliente lento, lo descartamos
+			// Si el cliente está bloqueado o es lento, lo cerramos y eliminamos
 			close(client.send)
 			delete(h.clients, client)
 		}
