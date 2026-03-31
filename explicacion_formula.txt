@@ -17,28 +17,3 @@ antes de que se acabe la gasolina.
 3. PASO 2 - CALCULAR EL TIEMPO QUE TE QUEDA:
    Se toma la gasolina que tienes en el tanque y se divide por el Gasto Actual.
    Horas de camino = Gasolina Actual / Gasto Actual
-
----------------------------------------------------
-EJEMPLO REAL DEL SIMULADOR:
----------------------------------------------------
-Datos del camion en el mapa:
-- Gasolina en el tanque: 30 litros
-- Velocidad: 60 km/h
-
-PASO 1 (Gasto):
-10 * (60 / 80) = 7.5 litros por hora.
-El camion esta gastando 7.5 litros cada hora que pasa.
-
-PASO 2 (Horas):
-30 litros acumulados / 7.5 litros que gastas por hora = 4.0 HORAS.
-Significa que al camion le quedan 4 horas de gasolina si sigue a esa velocidad.
-
-POR QUE NO SALIA LA ALERTA ANTES?
-Porque la alerta anterior estaba programada para avisar cuando quedaba MENOS DE 1 HORA.
-Como te quedaban 4 horas, el sistema decia: "Todo esta bien, aun tiene para rato".
-
-POR QUE AHORA SI SALE?
-Porque ahora cambiamos la regla. Ya no importa cuantas horas queden en el reloj. 
-Ahora, si el tanque baja del 20%, sale la alerta de inmediato para que el conductor 
-vaya a la estacion mas cercana.
----------------------------------------------------
