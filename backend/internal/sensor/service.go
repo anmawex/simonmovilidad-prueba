@@ -74,16 +74,12 @@ func (s *Service) Save(input ReadingInput) (*Reading, error) {
 		return nil, err
 	}
 
-	// Evalúa alerta de combustible automáticamente
+	// Evalúa alerta de combustible automáticamente (Menos de 1 hora)
 	if reading.FuelAutonomy < 1.0 {
-		_, err := s.alertService.CheckAndCreate(reading.VehicleID, reading.FuelAutonomy)
-		if err == nil {
-			// si hay alerta, también la transmite
-			s.hub.Broadcast("alert", map[string]any{
-				"vehicle_id": reading.VehicleID,
-				"type":       "low_fuel",
-				"autonomy":   reading.FuelAutonomy,
-			})
+		alert, err := s.alertService.CheckAndCreate(reading.VehicleID, reading.FuelAutonomy)
+		if err == nil && alert != nil {
+			// si hay alerta nueva, también la transmite
+			s.hub.Broadcast("alert", alert)
 		}
 	}
 

@@ -12,11 +12,11 @@ export default function LiveMap() {
   const markersRef   = useRef<Record<string, maplibregl.Marker>>({})
 
   const upsertMarker = useCallback((reading: SensorReading) => {
-    const { vehicle_id, latitude, longitude, fuel_level, speed } = reading
+    const { vehicle_id, latitude, longitude, fuel_level, fuel_autonomy, speed } = reading
     const map = mapRef.current
     if (!map) return
 
-    const targetColor = fuel_level < 20 ? '#ef4444' : '#3b82f6'
+    const targetColor = fuel_autonomy < 1.0 ? '#ef4444' : '#3b82f6'
 
     if (markersRef.current[vehicle_id]) {
       // mueve el marker existente
@@ -51,8 +51,8 @@ export default function LiveMap() {
       <div style="font-size:13px;line-height:1.6;color:#000">
         <strong>Vehículo: ${vehicle_id}</strong><br/>
         Velocidad: ${speed.toFixed(1)} km/h<br/>
-        Combustible: ${fuel_level.toFixed(1)}%<br/>
-        ${fuel_level < 20 ? '<span style="color:#ef4444;font-weight:bold">⚠ Combustible bajo</span>' : ''}
+        Autonomía: ${fuel_autonomy.toFixed(1)}h<br/>
+        ${fuel_autonomy < 1.0 ? '<span style="color:#ef4444;font-weight:bold">⚠ Autonomía crítica</span>' : ''}
       </div>
     `)
   }, [])
@@ -124,7 +124,7 @@ export default function LiveMap() {
         </div>
         <div className="flex items-center gap-2 text-foreground font-medium">
           <span className="w-3 h-3 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
-          Combustible Bajo
+          Autonomía &lt; 1 hora
         </div>
       </div>
     </div>

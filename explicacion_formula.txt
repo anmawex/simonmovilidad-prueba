@@ -1,0 +1,44 @@
+EXPLICACION DE LA FORMULA DE AUTONOMIA (BACKEND SIMON MOVILIDAD)
+
+Esta formula sirve para saber cuantas HORAS de viaje le quedan al camion 
+antes de que se acabe la gasolina.
+
+1. LOS DATOS BASE:
+   - El camion gasta 10 litros por cada hora que pasa (a una velocidad de 80 km/h).
+   - Suponemos que si vas mas rapido, gastas mas gasolina por hora.
+
+2. PASO 1 - CALCULAR EL GASTO ACTUAL:
+   Se toma la velocidad a la que va el camion y se compara con la velocidad base (80).
+   Gasto actual = 10 * (Tu Velocidad / 80)
+
+   EJEMPLO: Si vas a 40 km/h (la mitad de 80), tu gasto es de 5 litros por hora.
+   Si vas a 120 km/h, tu gasto es de 15 litros por hora.
+
+3. PASO 2 - CALCULAR EL TIEMPO QUE TE QUEDA:
+   Se toma la gasolina que tienes en el tanque y se divide por el Gasto Actual.
+   Horas de camino = Gasolina Actual / Gasto Actual
+
+---------------------------------------------------
+EJEMPLO REAL DEL SIMULADOR:
+---------------------------------------------------
+Datos del camion en el mapa:
+- Gasolina en el tanque: 30 litros
+- Velocidad: 60 km/h
+
+PASO 1 (Gasto):
+10 * (60 / 80) = 7.5 litros por hora.
+El camion esta gastando 7.5 litros cada hora que pasa.
+
+PASO 2 (Horas):
+30 litros acumulados / 7.5 litros que gastas por hora = 4.0 HORAS.
+Significa que al camion le quedan 4 horas de gasolina si sigue a esa velocidad.
+
+POR QUE NO SALIA LA ALERTA ANTES?
+Porque la alerta anterior estaba programada para avisar cuando quedaba MENOS DE 1 HORA.
+Como te quedaban 4 horas, el sistema decia: "Todo esta bien, aun tiene para rato".
+
+POR QUE AHORA SI SALE?
+Porque ahora cambiamos la regla. Ya no importa cuantas horas queden en el reloj. 
+Ahora, si el tanque baja del 20%, sale la alerta de inmediato para que el conductor 
+vaya a la estacion mas cercana.
+---------------------------------------------------

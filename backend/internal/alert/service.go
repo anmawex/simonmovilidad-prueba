@@ -33,6 +33,18 @@ func (s *Service) CheckAndCreate(vehicleID string, fuelAutonomy float64) (*Alert
 		return nil, nil // todo bien, sin alerta
 	}
 
+	var exists int
+	err := s.db.QueryRow(`
+		SELECT 1 FROM alerts 
+		WHERE vehicle_id = ? AND type = 'low_fuel' AND resolved = 0 LIMIT 1`, vehicleID,
+	).Scan(&exists)
+
+	// err == nil  → encontró fila → ya hay alerta activa, no crear otra
+	if err == nil {
+		return nil, nil
+	}
+	// err == sql.ErrNoRows → no existe alerta activa → crear una nueva
+
 	alert := &Alert{
 		ID:        generateID(),
 		VehicleID: vehicleID,
@@ -41,12 +53,12 @@ func (s *Service) CheckAndCreate(vehicleID string, fuelAutonomy float64) (*Alert
 		CreatedAt: time.Now(),
 	}
 
-	_, err := s.db.Exec(`
+	_, insertErr := s.db.Exec(`
 		INSERT INTO alerts (id, vehicle_id, type, message)
 		VALUES (?, ?, ?, ?)`,
 		alert.ID, alert.VehicleID, alert.Type, alert.Message,
 	)
-	return alert, err
+	return alert, insertErr
 }
 
 // GetActive retorna alertas sin resolver (solo para admins)
@@ -62,7 +74,7 @@ func (s *Service) GetActive() ([]Alert, error) {
 	}
 	defer rows.Close()
 
-	var alerts []Alert
+	alerts := make([]Alert, 0)
 	for rows.Next() {
 		var a Alert
 		var resolved int
