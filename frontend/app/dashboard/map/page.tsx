@@ -92,14 +92,17 @@ export default function MapPage() {
 
   return (
     <div className="flex flex-col h-full gap-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-foreground">Mapa en vivo</h1>
-        <div className="flex items-center gap-3">
+
+      {/* Controls bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+        <h1 className="text-xl font-semibold text-foreground shrink-0">Mapa en vivo</h1>
+
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:ml-auto w-full sm:w-auto">
           <select
             value={selectedVehicleId}
             onChange={e => setSelectedVehicleId(e.target.value)}
             disabled={isSimulating}
-            className="bg-slate-900 text-slate-100 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
+            className="w-full sm:w-auto bg-slate-900 text-slate-100 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
           >
             <option value="" className="bg-slate-900 text-slate-100">Escoge un vehículo...</option>
             {vehicles.map(v => (
@@ -107,39 +110,41 @@ export default function MapPage() {
             ))}
           </select>
 
-          <button 
-            onClick={resetSimulation}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold bg-secondary border border-border hover:bg-muted text-foreground transition-colors"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Restablecer 100%
-          </button>
-          
-          <button 
-            onClick={toggleSimulation}
-            disabled={!selectedVehicleId}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-              isSimulating 
-              ? 'bg-red-500/20 text-red-500 border border-red-500/50 hover:bg-red-500/30' 
-              : 'bg-primary text-primary-foreground hover:bg-primary/90'
-            }`}
-          >
-            {isSimulating ? (
-              <>
-                <Square className="w-4 h-4 fill-current" />
-                Detener Simulación
-              </>
-            ) : (
-              <>
-                <Play className="w-4 h-4 fill-current" />
-                Simular Vehículo
-              </>
-            )}
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={resetSimulation}
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-bold bg-secondary border border-border hover:bg-muted text-foreground transition-colors"
+            >
+              <RefreshCw className="w-4 h-4 shrink-0" />
+              <span className="sm:inline">Restablecer</span>
+            </button>
+
+            <button
+              onClick={toggleSimulation}
+              disabled={!selectedVehicleId}
+              className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-bold shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                isSimulating
+                ? 'bg-red-500/20 text-red-500 border border-red-500/50 hover:bg-red-500/30'
+                : 'bg-primary text-primary-foreground hover:bg-primary/90'
+              }`}
+            >
+              {isSimulating ? (
+                <>
+                  <Square className="w-4 h-4 fill-current shrink-0" />
+                  <span>Detener</span>
+                </>
+              ) : (
+                <>
+                  <Play className="w-4 h-4 fill-current shrink-0" />
+                  <span>Simular</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="flex-1 min-h-[500px] border border-border/50 rounded-xl overflow-hidden glass-card">
+      <div className="flex-1 min-h-[400px] border border-border/50 rounded-xl overflow-hidden glass-card">
         <LiveMap />
       </div>
     </div>
