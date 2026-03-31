@@ -102,7 +102,7 @@ func (s *Service) GetLatest() ([]Reading, error) {
 	}
 	defer rows.Close()
 
-	var readings []Reading
+	readings := make([]Reading, 0)
 	for rows.Next() {
 		var r Reading
 		if err := rows.Scan(
@@ -130,7 +130,7 @@ func (s *Service) GetHistory(vehicleID string, limit int) ([]Reading, error) {
 	}
 	defer rows.Close()
 
-	var readings []Reading
+	readings := make([]Reading, 0)
 	for rows.Next() {
 		var r Reading
 		if err := rows.Scan(

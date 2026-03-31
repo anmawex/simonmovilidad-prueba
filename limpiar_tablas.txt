@@ -1,0 +1,37 @@
+COMANDOS PARA LIMPIAR LAS TABLAS DE SIMON MOVILIDAD (SQLite)
+
+Puedes ejecutar estos comandos desde la terminal para vaciar los datos del proyecto.
+
+1. PARA LIMPIAR UNA TABLA ESPECIFICA:
+---------------------------------------------------
+- Limpiar Alertas:
+  sqlite3 backend/db/simon.db "DELETE FROM alerts;"
+
+- Limpiar Lecturas de Sensores (Telemetria):
+  sqlite3 backend/db/simon.db "DELETE FROM sensor_readings;"
+
+- Limpiar Vehiculos:
+  sqlite3 backend/db/simon.db "DELETE FROM vehicles;"
+
+- Limpiar Usuarios:
+  sqlite3 backend/db/simon.db "DELETE FROM users;"
+
+
+2. PARA LIMPIAR TODO DE UN SOLO GOLPE:
+---------------------------------------------------
+Si quieres resetear la base de datos completa pero manteniendo las tablas creadas:
+
+  sqlite3 backend/db/simon.db "DELETE FROM alerts; DELETE FROM sensor_readings; DELETE FROM vehicles; DELETE FROM users;"
+
+
+3. PARA RESETEAR LOS CONTADORES (IDs autoincrementales):
+---------------------------------------------------
+Si quieres que los IDs vuelvan a empezar desde 1:
+
+  sqlite3 backend/db/simon.db "DELETE FROM sqlite_sequence WHERE name='users' OR name='vehicles';"
+
+
+NOTA IMPORTANTE:
+Asegurate de estar en la raiz del proyecto antes de correr los comandos. 
+Si borras la tabla 'users', tendras que registrar un nuevo usuario para poder entrar al dashboard.
+---------------------------------------------------

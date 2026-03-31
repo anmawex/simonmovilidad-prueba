@@ -90,7 +90,9 @@ export default function LiveMap() {
         })
         if (response.ok) {
           const readings: SensorReading[] = await response.json()
-          readings.forEach(upsertMarker)
+          if (Array.isArray(readings)) {
+            readings.forEach(upsertMarker)
+          }
         }
       } catch (err) {
         console.error('Error cargando ubicaciones iniciales:', err)
