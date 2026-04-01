@@ -73,7 +73,7 @@ func TestService_GetActiveAndResolve(t *testing.T) {
 
 	// insertar alertas directamente o usando s.CheckAndCreate
 	s.CheckAndCreate(vehicleID, 0.5)
-	s.CheckAndCreate(vehicleID, 0.4)
+	s.CheckAndCreate("v-2", 0.4)
 
 	t.Run("Obtener alertas activas", func(t *testing.T) {
 		actives, err := s.GetActive()
